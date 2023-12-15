@@ -15,9 +15,6 @@ watch:
 run: setup ## run the app
 	python main.py
 
-build: setup ## create artifact
-	@echo "Not implemented"; false
-
 test: setup ## run all tests
 	@echo "Not implemented"; false
 
@@ -27,6 +24,7 @@ container: build ## create container
 
 BLE=feed4.ics
 upload: feed.ics ## upload to well-known location
+	# TODO: unahck
 	cp feed.ics $(BLE)
 	ncftpput $(FTP_DEPLOY_TARGET) . $(BLE)
 	rm $(BLE)
@@ -41,14 +39,6 @@ feed.ics: $(ENTRYPOINT_DEPS)
 	python main.py > feed.ics
 
 setup:
-gitclean:
-	@# will remove everything in .gitignore expect for blocks starting with dep* or lib* comment
-
-	diff --new-line-format="" --unchanged-line-format="" <(grep -v '^#' .gitignore | grep '\S' | sort) <(awk '/^# *(dep|lib)/,/^$/' testowy | head -n -1 | tail -n +2 | sort) | xargs rm -rf
-
-gitclean-with-libs:
-	diff --new-line-format="" --unchanged-line-format="" <(grep -v '^#' .gitignore | grep '\S' | sort) | xargs rm -rf
-
 # Utilities
 # ###############
 .PHONY: help todo clean really_clean init
@@ -58,9 +48,11 @@ init: ## one time setup
 todo: ## list all TODOs in the project
 	git grep -I --line-number TODO | grep -v 'list all TODOs in the project' | grep TODO
 
-clean: gitclean ## remove artifacts
+clean: ## remove artifacts
+	@echo "Not implemented"; false
 
 really_clean: gitclean-with-libs ## remove EVERYTHING
+	@echo "Not implemented"; false
 
 help: ## print this message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
