@@ -25,8 +25,8 @@ container: build ## create container
 	#docker build -t lmap .
 	@echo "Not implemented"; false
 
+BLE=feed3.ics
 upload: feed.ics ## upload to well-known location
-	BLE=feed1.ics
 	cp feed.ics $(BLE)
 	ncftpput $(FTP_DEPLOY_TARGET) . $(BLE)
 	rm $(BLE)
