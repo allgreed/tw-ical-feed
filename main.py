@@ -38,10 +38,11 @@ def main():
         cal.add_component(event)
 
     print(cal.to_ical().decode("utf-8"))
-    # TODO: post on Github
     # TODO: test sync when dates added
     # TODO: test sync when modified
         # wywalić -> otworzyć
+    # TODO: test sync when deleted
+    # 15-12-2023 18:51 updates dispatched
 
 
 if __name__ == "__main__":
