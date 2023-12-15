@@ -1,8 +1,8 @@
 import os
 import pytz
 from tasklib import TaskWarrior
-from icalendar import Calendar, Event, vDatetime
-from datetime import datetime, timedelta
+from icalendar import Calendar, Event
+from datetime import timedelta
 
 
 CALENDAR_NAME = "Tasks due"
@@ -43,6 +43,7 @@ def main():
         # wywalić -> otworzyć
     # TODO: test sync when deleted
     # 15-12-2023 18:51 updates dispatched
+    # iphone calendar works instantly after manual refresh
 
 
 if __name__ == "__main__":
