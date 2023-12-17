@@ -21,7 +21,6 @@ def main():
 
     for t in due_tasks:
         uuid, description, due_date, entry, modified = t["uuid"], t["description"], t["due"].date(), t["entry"], t["modified"]
-
         event = Event(
             summary=description,
             uid=uuid, 
@@ -34,16 +33,12 @@ def main():
         event.add("dtend", due_date + timedelta(days=1))
         event.add("dtstamp", entry)
         event.add("last-modified", modified)
-
         cal.add_component(event)
 
     print(cal.to_ical().decode("utf-8"))
-    # TODO: test sync when dates added
-    # TODO: test sync when modified
-        # wywalić -> otworzyć
-    # TODO: test sync when deleted
     # 15-12-2023 18:51 updates dispatched
     # iphone calendar works instantly after manual refresh
+    # 17-12-2023 13:35 -> google calendar has picked up, added, delete; modification doesn't work though o.0
 
 
 if __name__ == "__main__":
