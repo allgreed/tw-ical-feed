@@ -42,7 +42,11 @@ def main():
             uid=uuid, 
         )
 
-        dtime = timedelta(days=1) if (scheduled_time.hour, scheduled_time.minute, scheduled_time.second) == (0,0,0) else timedelta(minutes=15)
+        if (scheduled_time.hour, scheduled_time.minute, scheduled_time.second) == (0,0,0):
+            dtime = timedelta(days=1)
+            scheduled_time = scheduled_time.date()
+        else:
+            dtime = timedelta(minutes=15)
 
         event.add("dtstart", scheduled_time)
         event.add("dtend", scheduled_time + dtime)
