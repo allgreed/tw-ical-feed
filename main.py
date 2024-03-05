@@ -42,6 +42,7 @@ def main():
             uid=uuid, 
         )
 
+        # TODO: when merging, if merging - with intraday due dates the event should start 15 minutes *before* the due date and end on the due date exactly
         if (scheduled_time.hour, scheduled_time.minute, scheduled_time.second) == (0,0,0):
             dtime = timedelta(days=1)
             scheduled_time = scheduled_time.date()
