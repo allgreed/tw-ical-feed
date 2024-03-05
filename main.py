@@ -12,8 +12,7 @@ def main():
     tasks = tw.tasks.filter("-COMPLETED -DELETED")
 
     due_tasks = tasks.filter("due.any:")
-    # TODO: scheduled dates also?
-    # that would require a bit different handling in the output as well
+    scheduled_tasks = tasks.filter("scheduled.any:")
 
     cal = Calendar(version="2.0", prodid="-//Allgreed//tw-ical-feed//")
     cal.add("summary", CALENDAR_NAME)
@@ -22,11 +21,11 @@ def main():
     for t in due_tasks:
         uuid, description, due_date, entry, modified = t["uuid"], t["description"], t["due"].date(), t["entry"], t["modified"]
         event = Event(
-            summary=description,
+            summary="due: " + description,
             uid=uuid, 
         )
         # huh, cannot specify "last-modified" as a constructor parameter? :c
-        # also: I doesn't fire conversion when passed as constructor parameters - that's why the dtstart date
+        # also: it doesn't fire conversion when passed as constructor parameters - that's why the dtstart date
         # conversion hasn't kicked in
         # TODO: maybe address this?
         event.add("dtstart", due_date)
@@ -35,10 +34,25 @@ def main():
         event.add("last-modified", modified)
         cal.add_component(event)
 
+    for t in scheduled_tasks:
+        # TODO: this is copy-paste of the due handling, maybe something can be abstracted?
+        uuid, description, scheduled_time, entry, modified = t["uuid"], t["description"], t["scheduled"], t["entry"], t["modified"]
+        event = Event(
+            summary="plan: " + description,
+            uid=uuid, 
+        )
+
+        dtime = timedelta(days=1) if (scheduled_time.hour, scheduled_time.minute, scheduled_time.second) == (0,0,0) else timedelta(minutes=15)
+
+        event.add("dtstart", scheduled_time)
+        event.add("dtend", scheduled_time + dtime)
+        event.add("dtstamp", entry)
+        event.add("last-modified", modified)
+        cal.add_component(event)
+
     print(cal.to_ical().decode("utf-8"))
-    # 15-12-2023 18:51 updates dispatched
-    # iphone calendar works instantly after manual refresh
-    # 17-12-2023 13:35 -> google calendar has picked up, added, delete; modification doesn't work though o.0
+    # note: iphone calendar works instantly after manual refresh
+    # note: gmail takes ~24-36 hours and doesn't react to modifications
 
 
 if __name__ == "__main__":
