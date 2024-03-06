@@ -4,6 +4,20 @@ See your [due] dates for tasks on a calendar, generates an ics feed
 ## Usage
 For now go for [dev](#dev)
 
+### Manual integration
+
+For scheduled tasks you can control the length of the calendar via `estimate` UDA, simply:
+- add the following to your `.taskrc`:
+```
+uda.estimate.type=duration
+uda.estimate.label=Est
+```
+
+- populate this attribute, example:
+```
+task mod [id] estimate:15min
+```
+
 ## Dev
 
 ### Prerequisites

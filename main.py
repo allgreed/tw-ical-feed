@@ -1,7 +1,7 @@
-import os
-import pytz
+from typing import Optional
 from tasklib import TaskWarrior
 from icalendar import Calendar, Event
+import datetime
 from datetime import timedelta
 
 
@@ -47,7 +47,7 @@ def main():
             dtime = timedelta(days=1)
             scheduled_time = scheduled_time.date()
         else:
-            dtime = timedelta(minutes=15)
+            dtime = parse_UDA_duration(t["estimate"]) or timedelta(minutes=30)
 
         event.add("dtstart", scheduled_time)
         event.add("dtend", scheduled_time + dtime)
@@ -58,6 +58,33 @@ def main():
     print(cal.to_ical().decode("utf-8"))
     # note: iphone calendar works instantly after manual refresh
     # note: gmail takes ~24-36 hours and doesn't react to modifications
+
+
+def parse_UDA_duration(maybe_uda_duration: str) -> Optional[timedelta]:
+    # PT30M is 30 minutes
+    # PT5H is 5h
+    # Guess what PT5H30M is 5h 30 minutes
+    # TODO: add proper tests
+    # TODO: handle more values
+
+    # TODO: unfuck implementation
+    def fuj():
+        try:
+            return datetime.datetime.strptime(maybe_uda_duration, "PT%HH")
+        except ValueError:
+            try:
+                return datetime.datetime.strptime(maybe_uda_duration, "PT%MM")
+            except ValueError:
+                return datetime.datetime.strptime(maybe_uda_duration, "PT%HH%MM")
+
+    try:
+        dt = fuj()
+    except ValueError as e:
+        # TODO: singal error to stderr
+        return None
+    else:
+        base_offset = datetime.datetime(year=1900, day=1, month=1)
+        return dt - base_offset
 
 
 if __name__ == "__main__":
