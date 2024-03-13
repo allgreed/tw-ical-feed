@@ -60,12 +60,15 @@ def main():
     # note: gmail takes ~24-36 hours and doesn't react to modifications
 
 
-def parse_UDA_duration(maybe_uda_duration: str) -> Optional[timedelta]:
+def parse_UDA_duration(maybe_uda_duration: Optional[str]) -> Optional[timedelta]:
     # PT30M is 30 minutes
     # PT5H is 5h
     # Guess what PT5H30M is 5h 30 minutes
     # TODO: add proper tests
     # TODO: handle more values
+
+    if not maybe_uda_duration:
+        return None
 
     # TODO: unfuck implementation
     def fuj():
