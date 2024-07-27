@@ -12,7 +12,7 @@ def main():
     tasks = tw.tasks.filter("-COMPLETED -DELETED")
 
     due_tasks = tasks.filter("due.any:")
-    scheduled_tasks = tasks.filter("scheduled.any:")
+    scheduled_tasks = tasks.filter("plan.any:")
 
     cal = Calendar(version="2.0", prodid="-//Allgreed//tw-ical-feed//")
     cal.add("summary", CALENDAR_NAME)
@@ -36,21 +36,22 @@ def main():
 
     for t in scheduled_tasks:
         # TODO: this is copy-paste of the due handling, maybe something can be abstracted?
-        uuid, description, scheduled_time, entry, modified = t["uuid"], t["description"], t["scheduled"], t["entry"], t["modified"]
+        uuid, description, _planned_time, entry, modified = t["uuid"], t["description"], t["plan"], t["entry"], t["modified"]
         event = Event(
             summary="plan: " + description,
             uid=uuid, 
         )
+        planned_time = datetime.datetime.strptime(_planned_time, "%Y%m%dT%H%M%SZ")
 
         # TODO: when merging, if merging - with intraday due dates the event should start 15 minutes *before* the due date and end on the due date exactly
-        if (scheduled_time.hour, scheduled_time.minute, scheduled_time.second) == (0,0,0):
+        if (planned_time.hour, planned_time.minute, planned_time.second) == (0,0,0):
             dtime = timedelta(days=1)
-            scheduled_time = scheduled_time.date()
+            planned_time = planned_time.date()
         else:
             dtime = parse_UDA_duration(t["estimate"]) or timedelta(minutes=30)
 
-        event.add("dtstart", scheduled_time)
-        event.add("dtend", scheduled_time + dtime)
+        event.add("dtstart", planned_time)
+        event.add("dtend", planned_time + dtime)
         event.add("dtstamp", entry)
         event.add("last-modified", modified)
         cal.add_component(event)
@@ -60,6 +61,7 @@ def main():
     # note: gmail takes ~24-36 hours and doesn't react to modifications
 
 
+# TODO: upstream parsing uda by type to tasklib? -> https://github.com/GothenburgBitFactory/tasklib/issues/131
 def parse_UDA_duration(maybe_uda_duration: Optional[str]) -> Optional[timedelta]:
     # PT30M is 30 minutes
     # PT5H is 5h

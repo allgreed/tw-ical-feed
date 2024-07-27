@@ -6,17 +6,22 @@ For now go for [dev](#dev)
 
 ### Manual integration
 
-For scheduled tasks you can control the length of the calendar via `estimate` UDA, simply:
+There's also the experimental notion of planning.
+
 - add the following to your `.taskrc`:
 ```
 uda.estimate.type=duration
 uda.estimate.label=Est
+uda.plan.type=date
+uda.plan.label=Planned
 ```
 
 - populate this attribute, example:
 ```
-task mod [id] estimate:15min
+task mod [id] estimate:15min plan:today+12h
 ```
+
+And a plan event will be created for that task from today 12:00 to 12:15
 
 ## Dev
 
