@@ -1,8 +1,10 @@
 from typing import Optional
-from tasklib import TaskWarrior
-from icalendar import Calendar, Event
 import datetime
 from datetime import timedelta
+
+import pytz
+from tasklib import TaskWarrior
+from icalendar import Calendar, Event
 
 
 CALENDAR_NAME = "Tasks due"
@@ -41,7 +43,7 @@ def main():
             summary="plan: " + description,
             uid=uuid, 
         )
-        planned_time = datetime.datetime.strptime(_planned_time, "%Y%m%dT%H%M%SZ")
+        planned_time = datetime.datetime.strptime(_planned_time, "%Y%m%dT%H%M%SZ").replace(tzinfo=pytz.utc)
 
         # TODO: when merging, if merging - with intraday due dates the event should start 15 minutes *before* the due date and end on the due date exactly
         if (planned_time.hour, planned_time.minute, planned_time.second) == (0,0,0):
