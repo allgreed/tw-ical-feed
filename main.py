@@ -20,6 +20,9 @@ def main():
     cal.add("summary", CALENDAR_NAME)
     cal.add("X-WR-CALNAME", CALENDAR_NAME)
 
+    # TODO: unify the hanlding between due and planned!!!
+    # !!!!!!!!!!!
+
     for t in due_tasks:
         uuid, description, due_date, entry, modified = t["uuid"], t["description"], t["due"].date(), t["entry"], t["modified"]
         event = Event(
@@ -46,6 +49,8 @@ def main():
         planned_time = datetime.datetime.strptime(_planned_time, "%Y%m%dT%H%M%SZ").replace(tzinfo=pytz.utc)
 
         # TODO: when merging, if merging - with intraday due dates the event should start 15 minutes *before* the due date and end on the due date exactly
+        # TODO: this should take the utc offset from my TZ into account
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if (planned_time.hour, planned_time.minute, planned_time.second) == (0,0,0):
             dtime = timedelta(days=1)
             planned_time = planned_time.date()
