@@ -37,6 +37,7 @@ def main():
         event.add("dtend", due_date + timedelta(days=1))
         event.add("dtstamp", entry)
         event.add("last-modified", modified)
+        event.add("description", uuid)
         cal.add_component(event)
 
     for t in scheduled_tasks:
@@ -61,6 +62,7 @@ def main():
         event.add("dtend", planned_time + dtime)
         event.add("dtstamp", entry)
         event.add("last-modified", modified)
+        event.add("description", uuid)
         cal.add_component(event)
 
     print(cal.to_ical().decode("utf-8"))
