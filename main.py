@@ -52,11 +52,14 @@ def main():
         # TODO: when merging, if merging - with intraday due dates the event should start 15 minutes *before* the due date and end on the due date exactly
         # TODO: this should take the utc offset from my TZ into account
         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if (planned_time.hour, planned_time.minute, planned_time.second) == (0,0,0):
+        if (planned_time.hour, planned_time.minute, planned_time.second) == (23,0,0):
             dtime = timedelta(days=1)
             planned_time = planned_time.date()
         else:
             dtime = parse_UDA_duration(t["estimate"]) or timedelta(minutes=30)
+
+        # print(dtime)
+        # print(planned_time)
 
         event.add("dtstart", planned_time)
         event.add("dtend", planned_time + dtime)
