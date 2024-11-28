@@ -49,17 +49,22 @@ def main():
         )
         planned_time = datetime.datetime.strptime(_planned_time, "%Y%m%dT%H%M%SZ").replace(tzinfo=pytz.utc)
 
-        # TODO: when merging, if merging - with intraday due dates the event should start 15 minutes *before* the due date and end on the due date exactly
-        # TODO: this should take the utc offset from my TZ into account
-        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if (planned_time.hour, planned_time.minute, planned_time.second) == (23,0,0):
+        now = datetime.datetime.now()
+        utc_offset = now.astimezone().utcoffset()
+        assert utc_offset
+        midnight_reference = (now.replace(hour=0,minute=0,second=0,microsecond=0) - utc_offset).time()
+
+        assert 1, "Tasks *were* created in the same timezone as this programme is run"
+        # TODO: ^ this obviously doesn't hold during time change / aka dailght saving switch, even for the happy path,
+        # since Taskwarrior doesn't store the creation timezone I don't necessarily have a better idea on how to do it
+        # also: no idea how to enforce the assert programmatically
+        if planned_time.time() == midnight_reference:
             dtime = timedelta(days=1)
             planned_time = planned_time.date()
         else:
             dtime = parse_UDA_duration(t["estimate"]) or timedelta(minutes=30)
-
-        # print(dtime)
-        # print(planned_time)
+        # TODO: when merging, if merging - with intraday due dates the event should start 15 minutes *before* the due date and end on the due date exactly
+        # ^ wat?
 
         event.add("dtstart", planned_time)
         event.add("dtend", planned_time + dtime)
