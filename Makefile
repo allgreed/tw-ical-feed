@@ -1,6 +1,6 @@
 .POSIX:
 SOURCES := main.py
-TESTS := main_test.py
+TESTS := test_main.py
 INPUTS :=
 
 FTP_DEPLOY_TARGET := ovh
@@ -16,7 +16,7 @@ watch: ## run in WATCH mode
 	ls $(ENTRYPOINT_DEPS) | entr -c make --no-print-directory run
 
 run: setup ## run the app
-	python main.py
+	python main.py $(CAL)
 
 test: setup ## run all tests
 	python -m pytest

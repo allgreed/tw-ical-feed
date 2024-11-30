@@ -82,7 +82,7 @@ def mk_event(t: Task, plan: bool) -> Event:
         # also: no idea how to enforce the assert programmatically
         if planned_time.time() == midnight_reference:
             dtime = timedelta(days=1)
-            planned_time = planned_time.date()
+            planned_time = (planned_time + utc_offset).date()
         else:
             dtime = parse_UDA_duration(t["estimate"]) or timedelta(minutes=30)
         # TODO: when merging, if merging - with intraday due dates the event should start 15 minutes *before* the due date and end on the due date exactly
