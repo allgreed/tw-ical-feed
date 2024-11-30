@@ -28,21 +28,21 @@ container: build ## create container
 	#docker build -t lmap .
 	@echo "Not implemented"; false
 
-BLE=feed4.ics
-upload: feed.ics ## upload to well-known location
-	# TODO: unahck
-	cp feed.ics $(BLE)
-	ncftpput $(FTP_DEPLOY_TARGET) . $(BLE)
-	rm $(BLE)
+upload: plan.ics due.ics ## upload to well-known location
+	ncftpput $(FTP_DEPLOY_TARGET) . plan.ics
+	ncftpput $(FTP_DEPLOY_TARGET) . due.ics
 
 # Plumbing
 # ###############
 .PHONY: setup gitclean gitclean-with-libs
 
-.PHONY: feed.ics
-# TODO: this depends on status of taskwarriordb, could be encoded I guess
-feed.ics: $(ENTRYPOINT_DEPS)
-	python main.py > feed.ics
+.PHONY: plan.ics due.ics
+# TODO: this depends on status of taskwarriordb, could be encoded... maybe?
+plan.ics: $(ENTRYPOINT_DEPS)
+	python main.py plan > $@
+
+due.ics: $(ENTRYPOINT_DEPS)
+	python main.py due > $@
 
 setup:
 # Utilities

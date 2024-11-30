@@ -1,29 +1,49 @@
-from typing import Optional
+from typing import Optional, Literal
 import datetime
 from datetime import timedelta
+from enum import Enum
 
+import typer
 import pytz
-from tasklib import TaskWarrior
+from tasklib import TaskWarrior, Task
 from icalendar import Calendar, Event
 
 
-CALENDAR_NAME = "Tasks due"
+class CalendarType(str, Enum):
+    due = "due"
+    plan = "plan"
 
-def main():
+
+def main(calendar: CalendarType):
     tw = TaskWarrior()
     tasks = tw.tasks.filter("-COMPLETED -DELETED")
-
     due_tasks = tasks.filter("due.any:")
     scheduled_tasks = tasks.filter("plan.any:")
 
     cal = Calendar(version="2.0", prodid="-//Allgreed//tw-ical-feed//")
-    cal.add("summary", CALENDAR_NAME)
-    cal.add("X-WR-CALNAME", CALENDAR_NAME)
 
-    # TODO: unify the hanlding between due and planned!!!
-    # !!!!!!!!!!!
+    if calendar == CalendarType.due:
+        calendar_name = "Tasks due"
+        for t in due_tasks:
+            cal.add_component(mk_event(t))
+    elif calendar == CalendarType.plan:
+        calendar_name = "Tasks planned"
+        for t in scheduled_tasks:
+            cal.add_component(mk_event(t))
+    else:
+        assert 0, "unreachable"
 
-    for t in due_tasks:
+    cal.add("summary", calendar_name)
+    cal.add("X-WR-CALNAME", calendar_name)
+    print(cal.to_ical().decode("utf-8"))
+    # note: iphone calendar works instantly after manual refresh
+    # note: gmail takes ~24-36 hours and doesn't react to modifications
+
+
+def mk_event(t: Task) -> Event:
+# TODO: unify the hanlding between due and planned!!!
+# !!!!!!!!!!!
+    if t["due"]:
         uuid, description, due_date, entry, modified = t["uuid"], t["description"], t["due"].date(), t["entry"], t["modified"]
         event = Event(
             summary="due: " + description,
@@ -38,9 +58,9 @@ def main():
         event.add("dtstamp", entry)
         event.add("last-modified", modified)
         event.add("description", uuid)
-        cal.add_component(event)
+        return event
 
-    for t in scheduled_tasks:
+    if t["plan"]:
         # TODO: this is copy-paste of the due handling, maybe something can be abstracted?
         uuid, description, _planned_time, entry, modified = t["uuid"], t["description"], t["plan"], t["entry"], t["modified"]
         event = Event(
@@ -71,11 +91,7 @@ def main():
         event.add("dtstamp", entry)
         event.add("last-modified", modified)
         event.add("description", uuid)
-        cal.add_component(event)
-
-    print(cal.to_ical().decode("utf-8"))
-    # note: iphone calendar works instantly after manual refresh
-    # note: gmail takes ~24-36 hours and doesn't react to modifications
+        return event
 
 
 # TODO: upstream parsing uda by type to tasklib? -> https://github.com/GothenburgBitFactory/tasklib/issues/131
@@ -110,4 +126,4 @@ def parse_UDA_duration(maybe_uda_duration: Optional[str]) -> Optional[timedelta]
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)

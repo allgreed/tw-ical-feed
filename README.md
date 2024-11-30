@@ -1,5 +1,5 @@
 # tw-ical-feed
-See your [due] dates for tasks on a calendar, generates an ics feed 
+See your dates for tasks on a calendar, generates an ics feeds - one for due and one for planned dates
 
 ## Usage
 For now go for [dev](#dev)

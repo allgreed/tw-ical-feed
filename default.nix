@@ -8,6 +8,7 @@ let
   pythonPkgs = python-packages: with python-packages; [
     tasklib
     icalendar
+    typer
 
     # TODO: split into dev and app
     pytest
