@@ -9,6 +9,8 @@ let
     tasklib
     icalendar
 
+    # TODO: split into dev and app
+    pytest
     ptpython # nicer repl
   ];
   pythonCore = pkgs.python310;

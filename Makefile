@@ -1,22 +1,28 @@
 .POSIX:
 SOURCES := main.py
+TESTS := main_test.py
 INPUTS :=
-ENTRYPOINT_DEPS := $(SOURCES) $(INPUTS)
 
 FTP_DEPLOY_TARGET := ovh
+
+ENTRYPOINT_DEPS := $(SOURCES) $(INPUTS)
+TEST_DEPS := $(SOURCES) $(TESTS)
 
 # Porcelain
 # ###############
 .PHONY: env-up env-down env-recreate container run build lint test watch
 
-watch:
+watch: ## run in WATCH mode
 	ls $(ENTRYPOINT_DEPS) | entr -c make --no-print-directory run
 
 run: setup ## run the app
 	python main.py
 
 test: setup ## run all tests
-	@echo "Not implemented"; false
+	python -m pytest
+
+test-watch: setup ## run all test in WATCH mode
+	ls $(TEST_DEPS) | entr -c make --no-print-directory test
 
 container: build ## create container
 	#docker build -t lmap .
