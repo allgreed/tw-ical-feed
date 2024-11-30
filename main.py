@@ -25,11 +25,11 @@ def main(calendar: CalendarType):
     if calendar == CalendarType.due:
         calendar_name = "Tasks due"
         for t in due_tasks:
-            cal.add_component(mk_event(t))
+            cal.add_component(mk_event(t, False))
     elif calendar == CalendarType.plan:
         calendar_name = "Tasks planned"
         for t in scheduled_tasks:
-            cal.add_component(mk_event(t))
+            cal.add_component(mk_event(t, True))
     else:
         assert 0, "unreachable"
 
@@ -40,14 +40,16 @@ def main(calendar: CalendarType):
     # note: gmail takes ~24-36 hours and doesn't react to modifications
 
 
-def mk_event(t: Task) -> Event:
+def mk_event(t: Task, plan: bool) -> Event:
 # TODO: unify the hanlding between due and planned!!!
 # !!!!!!!!!!!
-    if t["due"]:
+    if not plan:
         uuid, description, due_date, entry, modified = t["uuid"], t["description"], t["due"].date(), t["entry"], t["modified"]
         event = Event(
             summary="due: " + description,
             uid=uuid, 
+            # this is the reason why there has to be 2 streams for the planned and due - otherwise I'd have to maitain
+            # some kind of state of use ugly hack like plan being due uuid +1
         )
         # huh, cannot specify "last-modified" as a constructor parameter? :c
         # also: it doesn't fire conversion when passed as constructor parameters - that's why the dtstart date
