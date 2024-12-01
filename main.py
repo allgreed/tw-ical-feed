@@ -46,7 +46,7 @@ def mk_event(t: Task, plan: bool) -> Event:
     if not plan:
         uuid, description, due_date, entry, modified = t["uuid"], t["description"], t["due"].date(), t["entry"], t["modified"]
         event = Event(
-            summary="due: " + description,
+            summary=description,
             uid=uuid, 
             # this is the reason why there has to be 2 streams for the planned and due - otherwise I'd have to maitain
             # some kind of state of use ugly hack like plan being due uuid +1
@@ -66,7 +66,7 @@ def mk_event(t: Task, plan: bool) -> Event:
         # TODO: this is copy-paste of the due handling, maybe something can be abstracted?
         uuid, description, _planned_time, entry, modified = t["uuid"], t["description"], t["plan"], t["entry"], t["modified"]
         event = Event(
-            summary="plan: " + description,
+            summary=description,
             uid=uuid, 
         )
         planned_time = datetime.datetime.strptime(_planned_time, "%Y%m%dT%H%M%SZ").replace(tzinfo=pytz.utc)
