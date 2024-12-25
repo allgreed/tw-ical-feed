@@ -60,6 +60,7 @@ def mk_event(t: Task, plan: bool) -> Event:
         event.add("dtstamp", entry)
         event.add("last-modified", modified)
         event.add("description", uuid)
+        event.add("location", t["geo"])
         return event
 
     if t["plan"]:
@@ -93,6 +94,7 @@ def mk_event(t: Task, plan: bool) -> Event:
         event.add("dtstamp", entry)
         event.add("last-modified", modified)
         event.add("description", uuid)
+        event.add("location", t["geo"])
         return event
 
 
